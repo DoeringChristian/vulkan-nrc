@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 
-bytemuck = "1.16.1"
+bytemuck = { version = "1.16.1", features = ["derive"] }
 crevice = { version = "0.16.0", features = ["glam"] }
 glam = { version = "0.27.0", features = ["bytemuck", "std"] }
 image = "0.25.1"
@@ -15,3 +15,4 @@ screen-13-window = { git = "https://github.com/attackgoat/screen-13.git", rev = 
 # screen-13-hot = { git = "https://github.com/attackgoat/screen-13.git", rev ="7021e0aebd47560897564fdfd1019df5d5c5c4c7" }
 winit = "0.30"
 pretty_env_logger = "0.5"
+log = "0.4"
