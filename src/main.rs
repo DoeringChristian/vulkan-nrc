@@ -3,6 +3,7 @@ use screen_13_window::{Window, WindowError};
 
 mod bsdf;
 mod device_address;
+mod diffuse_bsdf;
 mod instance;
 mod mesh;
 mod registry;
