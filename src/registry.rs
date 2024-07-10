@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use crevice::glsl::Glsl;
 use crevice::std140::{AsStd140, Std140, WriteStd140};
+use indexmap::IndexMap;
 use screen_13::prelude::*;
 
 #[repr(C)]
@@ -46,6 +47,7 @@ pub struct Registry {
     pub rgraph: RenderGraph,
     pub buffers: Vec<Arc<Buffer>>,
     pub images: Vec<Arc<Image>>,
+    pub callables: IndexMap<&'static [u32], Shader>,
 }
 
 impl Registry {
@@ -56,6 +58,7 @@ impl Registry {
             rgraph: RenderGraph::new(),
             buffers: Default::default(),
             images: Default::default(),
+            callables: Default::default(),
         }
     }
     pub fn add_buffer(&mut self, buffer: &Arc<Buffer>) -> BufferIndex {
@@ -103,8 +106,17 @@ impl Registry {
 
         return self.add_buffer(&buf);
     }
-    pub fn add_callable(source: &'static str) -> CallableIndex {
-        todo!()
+    pub fn add_callable(&mut self, source: &'static [u32]) -> CallableIndex {
+        let entry = self.callables.entry(source);
+        let index = match entry {
+            indexmap::map::Entry::Occupied(entry) => entry.index(),
+            indexmap::map::Entry::Vacant(entry) => {
+                let index = entry.index();
+                entry.insert(Shader::new_callable(source).build());
+                index
+            }
+        };
+        CallableIndex(index as _)
     }
 }
 

@@ -2378,6 +2378,7 @@ dependencies = [
  "crevice",
  "glam",
  "image",
+ "indexmap",
  "inline-spirv",
  "log",
  "pretty_env_logger",

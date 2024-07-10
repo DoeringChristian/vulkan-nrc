@@ -30,11 +30,11 @@ impl Register for Mesh {
 }
 
 impl Shape for Mesh {
-    fn intersection(&self) -> Option<&'static str> {
+    fn intersection(&self) -> Option<&'static [u32]> {
         None
     }
 
-    fn compute_surface_interaction(&self) -> Option<&'static str> {
+    fn compute_surface_interaction(&self) -> &'static [u32] {
         todo!()
     }
 }

@@ -1,7 +1,7 @@
 use crevice::{glsl::GlslStruct, std140::AsStd140};
 use glam::*;
 
-use crate::registry::BufferIndex;
+use crate::registry::{BufferIndex, CallableIndex};
 
 pub struct Instance {
     pub to_world: Mat4,
@@ -14,6 +14,5 @@ pub struct Instance {
 pub struct InstanceData {
     pub to_world: Mat4,
     pub shape_buf: BufferIndex,
-    pub intersection_callable: u32,
-    pub compute_surface_interaction_callable: u32,
+    pub compute_surface_interaction: CallableIndex,
 }

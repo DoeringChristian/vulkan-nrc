@@ -1,3 +1,4 @@
+use indexmap::IndexMap;
 use screen_13::prelude::*;
 use std::sync::Arc;
 
@@ -18,16 +19,21 @@ pub struct Scene {
 impl Scene {
     pub fn upload(&mut self, device: &Arc<Device>) {
         let mut registry = Registry::new(device);
+
         let instance_data = self
             .instances
             .iter()
             .map(|instance| {
-                let shape_buf = self.shapes[instance.shape].register(&mut registry);
+                let shape = &*self.shapes[instance.shape];
+                let shape_buf = shape.register(&mut registry);
+
+                let compute_surface_interaction =
+                    registry.add_callable(shape.compute_surface_interaction());
+
                 InstanceData {
                     to_world: instance.to_world,
                     shape_buf,
-                    intersection_callable: 0,
-                    compute_surface_interaction_callable: 0,
+                    compute_surface_interaction,
                 }
             })
             .collect::<Vec<_>>();
