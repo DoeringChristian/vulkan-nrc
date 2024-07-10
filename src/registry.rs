@@ -71,13 +71,8 @@ impl Registry {
         self.images.push(image.clone());
         index
     }
-    pub fn upload_as_std140(
-        &mut self,
-        data: impl AsStd140,
-        // rgraph: &mut RenderGraph,
-    ) -> BufferIndex {
-        let data = data.as_std140();
-        let size = data.std140_size() as u64;
+    pub fn upload_buffer(&mut self, data: &[u8]) -> BufferIndex {
+        let size = data.len() as u64;
         let mut tmp = self
             .cache
             .lease(BufferInfo::host_mem(
@@ -86,9 +81,7 @@ impl Registry {
             ))
             .unwrap();
 
-        let slice = Buffer::mapped_slice_mut(&mut tmp);
-        let mut writer = crevice::std140::Writer::new(slice);
-        writer.write(&data.as_std140()).unwrap();
+        Buffer::copy_from_slice(&mut tmp, 0, data);
 
         let tmp = self.rgraph.bind_node(tmp);
 
@@ -105,6 +98,20 @@ impl Registry {
         self.rgraph.copy_buffer(tmp, buf_node);
 
         return self.add_buffer(&buf);
+    }
+    pub fn upload_std140(&mut self, data: impl AsStd140) -> BufferIndex {
+        let mut buf = vec![];
+        let mut writer = crevice::std140::Writer::new(&mut buf);
+        writer.write(&data.as_std140()).unwrap();
+        self.upload_buffer(&buf)
+    }
+    pub fn upload_std140_slice<T: AsStd140>(&mut self, data: &[T]) -> BufferIndex {
+        let mut buf = vec![];
+        let mut writer = crevice::std140::Writer::new(&mut buf);
+        for data in data.into_iter() {
+            writer.write(data).unwrap();
+        }
+        self.upload_buffer(&buf)
     }
     pub fn add_callable(&mut self, source: &'static [u32]) -> CallableIndex {
         let entry = self.callables.entry(source);

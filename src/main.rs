@@ -1,9 +1,11 @@
 use screen_13::prelude::*;
 use screen_13_window::{Window, WindowError};
 
+mod area_emitter;
 mod bsdf;
 mod device_address;
 mod diffuse_bsdf;
+mod emitter;
 mod instance;
 mod mesh;
 mod registry;
