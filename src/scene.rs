@@ -7,6 +7,7 @@ use crate::registry::{BufferIndex, Register, Registry};
 
 use super::{bsdf::BSDF, emitter::Emitter, instance::Instance, shape::Shape};
 
+#[derive(Default)]
 pub struct Scene {
     pub instances: Vec<Instance>,
     pub shapes: Vec<Box<dyn Shape>>,

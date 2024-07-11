@@ -50,6 +50,39 @@ pub struct Registry {
     pub callables: IndexMap<&'static [u32], Shader>,
 }
 
+pub fn upload_buffer(
+    data: &[u8],
+    rgraph: &mut RenderGraph,
+    cache: &mut HashPool,
+    device: &Arc<Device>,
+) -> Arc<Buffer> {
+    let size = data.len() as u64;
+    let mut tmp = cache
+        .lease(BufferInfo::host_mem(
+            size,
+            vk::BufferUsageFlags::TRANSFER_SRC,
+        ))
+        .unwrap();
+
+    Buffer::copy_from_slice(&mut tmp, 0, data);
+
+    let tmp = rgraph.bind_node(tmp);
+
+    let buf = Arc::new(
+        Buffer::create(
+            &device,
+            BufferInfo::device_mem(size, vk::BufferUsageFlags::STORAGE_BUFFER),
+        )
+        .unwrap(),
+    );
+
+    let buf_node = rgraph.bind_node(buf.clone());
+
+    rgraph.copy_buffer(tmp, buf_node);
+
+    return buf;
+}
+
 impl Registry {
     pub fn new(device: &Arc<Device>) -> Self {
         Self {

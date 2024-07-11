@@ -3,17 +3,47 @@ use std::sync::Arc;
 use crevice::{glsl::GlslStruct, std140::AsStd140};
 use glam::*;
 
-use crate::registry::{BufferIndex, Register, Registry};
+use crate::registry::{upload_buffer, BufferIndex, Register, Registry};
 use crate::shape::Shape;
 
 use screen_13::prelude::*;
 
+#[derive(Clone, Copy)]
+pub struct MeshDesc<'a> {
+    pub indices: &'a [u32],
+    pub positions: &'a [[f32; 3]],
+    pub normals: &'a [[f32; 3]],
+    pub uvs: &'a [[f32; 2]],
+}
+
 pub struct Mesh {
-    indices_count: u32,
-    indices: Arc<Buffer>,
-    positions: Arc<Buffer>,
-    normals: Arc<Buffer>,
-    uvs: Arc<Buffer>,
+    pub indices_count: u32,
+    pub indices: Arc<Buffer>,
+    pub positions: Arc<Buffer>,
+    pub normals: Arc<Buffer>,
+    pub uvs: Arc<Buffer>,
+}
+
+impl Mesh {
+    pub fn new(
+        desc: MeshDesc,
+        rgraph: &mut RenderGraph,
+        cache: &mut HashPool,
+        device: &Arc<Device>,
+    ) -> Self {
+        let indices = upload_buffer(bytemuck::cast_slice(desc.indices), rgraph, cache, device);
+        let positions = upload_buffer(bytemuck::cast_slice(desc.positions), rgraph, cache, device);
+        let normals = upload_buffer(bytemuck::cast_slice(desc.normals), rgraph, cache, device);
+        let uvs = upload_buffer(bytemuck::cast_slice(desc.uvs), rgraph, cache, device);
+
+        Self {
+            indices_count: desc.indices.len() as u32,
+            indices,
+            positions,
+            normals,
+            uvs,
+        }
+    }
 }
 
 impl Register for Mesh {
