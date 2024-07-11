@@ -25,7 +25,7 @@ impl Register for Mesh {
             normals: registry.add_buffer(&self.normals),
             uvs: registry.add_buffer(&self.uvs),
         };
-        registry.upload_as_std140(data)
+        registry.upload_std140(data)
     }
 }
 

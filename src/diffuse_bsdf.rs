@@ -26,7 +26,7 @@ impl Register for DiffuseBSDF {
         let data = DiffuseBSDFData {
             value: registry.add_image(&self.value),
         };
-        registry.upload_as_std140(data)
+        registry.upload_std140(data)
     }
 }
 

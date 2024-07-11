@@ -25,7 +25,7 @@ impl Register for AreaEmitter {
         let data = AreaEmitterData {
             value: registry.add_image(&self.value),
         };
-        registry.upload_as_std140(data)
+        registry.upload_std140(data)
     }
 }
 
