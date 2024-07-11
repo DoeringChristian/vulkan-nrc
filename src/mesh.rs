@@ -3,7 +3,7 @@ use std::sync::Arc;
 use crevice::{glsl::GlslStruct, std140::AsStd140};
 use glam::*;
 
-use crate::registry::{upload_buffer, BufferIndex, Register, Registry};
+use crate::registry::{BufferIndex, BufferOffset, Registry};
 use crate::shape::Shape;
 
 use screen_13::prelude::*;
@@ -25,16 +25,11 @@ pub struct Mesh {
 }
 
 impl Mesh {
-    pub fn new(
-        desc: MeshDesc,
-        rgraph: &mut RenderGraph,
-        cache: &mut HashPool,
-        device: &Arc<Device>,
-    ) -> Self {
-        let indices = upload_buffer(bytemuck::cast_slice(desc.indices), rgraph, cache, device);
-        let positions = upload_buffer(bytemuck::cast_slice(desc.positions), rgraph, cache, device);
-        let normals = upload_buffer(bytemuck::cast_slice(desc.normals), rgraph, cache, device);
-        let uvs = upload_buffer(bytemuck::cast_slice(desc.uvs), rgraph, cache, device);
+    pub fn new(desc: MeshDesc, registry: &mut Registry) -> Self {
+        let indices = registry.upload_buffer(bytemuck::cast_slice(desc.indices));
+        let positions = registry.upload_buffer(bytemuck::cast_slice(desc.positions));
+        let normals = registry.upload_buffer(bytemuck::cast_slice(desc.normals));
+        let uvs = registry.upload_buffer(bytemuck::cast_slice(desc.uvs));
 
         Self {
             indices_count: desc.indices.len() as u32,
@@ -46,8 +41,16 @@ impl Mesh {
     }
 }
 
-impl Register for Mesh {
-    fn register(&self, registry: &mut Registry) -> BufferIndex {
+impl Shape for Mesh {
+    fn intersection(&self) -> Option<&'static [u32]> {
+        None
+    }
+
+    fn compute_surface_interaction(&self) -> &'static [u32] {
+        todo!()
+    }
+
+    fn register(&self, registry: &mut Registry) -> (BufferIndex, BufferOffset) {
         let data = MeshData {
             indices: registry.add_buffer(&self.indices),
             indices_count: self.indices_count,
@@ -56,16 +59,6 @@ impl Register for Mesh {
             uvs: registry.add_buffer(&self.uvs),
         };
         registry.upload_std140(data)
-    }
-}
-
-impl Shape for Mesh {
-    fn intersection(&self) -> Option<&'static [u32]> {
-        None
-    }
-
-    fn compute_surface_interaction(&self) -> &'static [u32] {
-        todo!()
     }
 }
 

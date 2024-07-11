@@ -4,7 +4,7 @@ use crevice::glsl::GlslStruct;
 use crevice::std140::AsStd140;
 
 use crate::bsdf::BSDF;
-use crate::registry::{ImageIndex, Register};
+use crate::registry::{BufferIndex, BufferOffset, ImageIndex, Registry};
 use screen_13::prelude::*;
 
 struct DiffuseBSDF {
@@ -19,10 +19,8 @@ impl BSDF for DiffuseBSDF {
     fn sample(&self) -> &'static [u32] {
         todo!()
     }
-}
 
-impl Register for DiffuseBSDF {
-    fn register(&self, registry: &mut crate::registry::Registry) -> crate::registry::BufferIndex {
+    fn register(&self, registry: &mut Registry) -> (BufferIndex, BufferOffset) {
         let data = DiffuseBSDFData {
             value: registry.add_image(&self.value),
         };

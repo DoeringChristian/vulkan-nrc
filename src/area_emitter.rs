@@ -4,7 +4,7 @@ use screen_13::prelude::*;
 use std::sync::Arc;
 
 use crate::emitter::Emitter;
-use crate::registry::{ImageIndex, Register};
+use crate::registry::{BufferIndex, BufferOffset, ImageIndex, Registry};
 
 struct AreaEmitter {
     pub value: Arc<Image>,
@@ -18,10 +18,8 @@ impl Emitter for AreaEmitter {
     fn sample(&self) -> &'static [u32] {
         todo!()
     }
-}
 
-impl Register for AreaEmitter {
-    fn register(&self, registry: &mut crate::registry::Registry) -> crate::registry::BufferIndex {
+    fn register(&self, registry: &mut Registry) -> (BufferIndex, BufferOffset) {
         let data = AreaEmitterData {
             value: registry.add_image(&self.value),
         };

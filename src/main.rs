@@ -4,6 +4,7 @@ use screen_13_window::{Window, WindowError};
 
 use self::instance::Instance;
 use self::mesh::{Mesh, MeshDesc};
+use self::registry::Registry;
 use self::scene::Scene;
 
 mod area_emitter;
@@ -24,8 +25,7 @@ fn main() -> Result<(), WindowError> {
     let window = Window::new()?;
     let device = &window.device;
 
-    let mut rgraph = RenderGraph::new();
-    let mut cache = HashPool::new(device);
+    let mut registry = Registry::new(device);
 
     let indices = vec![0, 1, 2];
     let positions = vec![[0., 0., 0.], [0., 1., 0.], [1., 0., 0.]];
@@ -39,9 +39,7 @@ fn main() -> Result<(), WindowError> {
             normals: &normals,
             uvs: &uvs,
         },
-        &mut rgraph,
-        &mut cache,
-        device,
+        &mut registry,
     );
 
     let scene = Scene {
