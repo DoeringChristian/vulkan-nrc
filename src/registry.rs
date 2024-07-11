@@ -7,11 +7,8 @@ use crevice::std140::{self, AsStd140, Std140, WriteStd140};
 use indexmap::IndexMap;
 use screen_13::prelude::*;
 
-pub const fn align_up(val: usize, base: usize) -> usize {
-    div_round_up(val, base) * base
-}
-pub const fn div_round_up(val: usize, divisor: usize) -> usize {
-    (val + divisor - 1) / divisor
+fn align_up(val: usize, alignment: usize) -> usize {
+    ((val - 1) / alignment + 1) * alignment
 }
 
 #[repr(C)]
