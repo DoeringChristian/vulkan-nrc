@@ -1,5 +1,6 @@
 use std::any::TypeId;
 use std::collections::HashMap;
+use std::num::NonZeroU32;
 use std::sync::Arc;
 
 use crevice::glsl::Glsl;
@@ -59,6 +60,29 @@ unsafe impl Glsl for CallableIndex {
     const NAME: &'static str = "uint";
 }
 
+#[repr(C)]
+#[derive(Clone, Copy, Debug, bytemuck::Zeroable, bytemuck::Pod)]
+pub struct IntersectionIndex(u32);
+
+impl From<Option<u32>> for IntersectionIndex {
+    fn from(value: Option<u32>) -> Self {
+        if let Some(value) = value {
+            assert!(value != u32::MAX);
+            Self(value)
+        } else {
+            Self(u32::MAX)
+        }
+    }
+}
+
+unsafe impl Std140 for IntersectionIndex {
+    const ALIGNMENT: usize = 4;
+}
+
+unsafe impl Glsl for IntersectionIndex {
+    const NAME: &'static str = "uint";
+}
+
 pub enum BufferField {
     Buffer(Arc<Buffer>),
     Vec(Vec<u8>),
@@ -72,6 +96,7 @@ pub struct Registry {
     pub images: Vec<Arc<Image>>,
     pub data_buffers: IndexMap<usize, BufferIndex>,
     pub callables: IndexMap<&'static [u32], Shader>,
+    pub intersections: IndexMap<&'static [u32], Shader>,
 }
 
 pub fn upload_data(
@@ -117,6 +142,7 @@ impl Registry {
             images: Default::default(),
             data_buffers: Default::default(),
             callables: Default::default(),
+            intersections: Default::default(),
         }
     }
     pub fn add_buffer(&mut self, buffer: &Arc<Buffer>) -> BufferIndex {
@@ -192,5 +218,22 @@ impl Registry {
             }
         };
         CallableIndex(index as _)
+    }
+    pub fn add_intersection(&mut self, source: Option<&'static [u32]>) -> IntersectionIndex {
+        let index = source
+            .map(|source| {
+                let entry = self.intersections.entry(source);
+                let index = match entry {
+                    indexmap::map::Entry::Occupied(entry) => entry.index(),
+                    indexmap::map::Entry::Vacant(entry) => {
+                        let index = entry.index();
+                        entry.insert(Shader::new_intersection(source).build());
+                        index
+                    }
+                };
+                index as u32
+            })
+            .into();
+        index
     }
 }

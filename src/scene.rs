@@ -17,6 +17,7 @@ pub struct Scene {
     pub buffers: Vec<Arc<Buffer>>,
     pub images: Vec<Arc<Image>>,
     pub callables: Vec<Shader>,
+    pub intersections: Vec<Shader>,
     pub instance_buffer: Option<BufferIndex>,
 }
 
@@ -30,6 +31,7 @@ impl Scene {
                 let (shape_buf, shape_offset) = shape.register(&mut registry);
                 let compute_surface_interaction =
                     registry.add_callable(shape.compute_surface_interaction());
+                let intersection = registry.add_intersection(shape.intersection());
 
                 let bsdf = &*self.bsdfs[instance.bsdf];
                 let (bsdf_buf, bsdf_offset) = bsdf.register(&mut registry);
@@ -45,6 +47,7 @@ impl Scene {
                     to_world: instance.to_world,
                     shape_buf,
                     shape_offset,
+                    intersection,
                     compute_surface_interaction,
                     bsdf_buf,
                     bsdf_offset,
@@ -67,12 +70,16 @@ impl Scene {
             buffers,
             images,
             callables,
+            intersections,
             device,
             ..
         } = registry;
 
         self.callables.clear();
         self.callables.extend(callables.into_values());
+
+        self.intersections.clear();
+        self.intersections.extend(intersections.into_values());
 
         let buffers = buffers
             .into_iter()

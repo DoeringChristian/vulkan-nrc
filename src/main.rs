@@ -42,7 +42,7 @@ fn main() -> Result<(), WindowError> {
         &mut registry,
     );
 
-    let scene = Scene {
+    let mut scene = Scene {
         instances: vec![Instance {
             to_world: Mat4::IDENTITY,
             shape: 0,
@@ -54,6 +54,8 @@ fn main() -> Result<(), WindowError> {
         emitters: vec![],
         ..Default::default()
     };
+
+    scene.upload(registry);
 
     window.run(|frame| {
         frame
