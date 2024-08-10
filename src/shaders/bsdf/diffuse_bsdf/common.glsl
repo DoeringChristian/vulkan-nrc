@@ -1,0 +1,4 @@
+
+struct DiffuseBSDF {
+    uint value;
+};

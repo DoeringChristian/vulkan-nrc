@@ -12,6 +12,7 @@ image = "0.25.1"
 inline-spirv = "0.2.1"
 screen-13 = { git = "https://github.com/attackgoat/screen-13.git", rev = "7021e0aebd47560897564fdfd1019df5d5c5c4c7" }
 screen-13-window = { git = "https://github.com/attackgoat/screen-13.git", rev = "7021e0aebd47560897564fdfd1019df5d5c5c4c7" }
+screen-13-fx = { git = "https://github.com/attackgoat/screen-13.git", rev = "7021e0aebd47560897564fdfd1019df5d5c5c4c7" }
 # screen-13-hot = { git = "https://github.com/attackgoat/screen-13.git", rev ="7021e0aebd47560897564fdfd1019df5d5c5c4c7" }
 winit = "0.30"
 pretty_env_logger = "0.5"

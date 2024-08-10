@@ -48,7 +48,7 @@ impl Shape for Mesh {
     }
 
     fn compute_surface_interaction(&self) -> &'static [u32] {
-        include_spirv!("src/shaders/compute_si/mesh.glsl", rcall, vulkan1_2,  I "src/shaders")
+        include_spirv!("src/shaders/shape/mesh/compute_si.glsl", rcall, vulkan1_2,  I "src/shaders")
     }
 
     fn register(&self, registry: &mut Registry) -> (BufferIndex, BufferOffset) {

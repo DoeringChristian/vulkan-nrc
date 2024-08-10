@@ -2,6 +2,7 @@ use glam::*;
 use screen_13::prelude::*;
 use screen_13_window::{Window, WindowError};
 
+use self::diffuse_bsdf::{DiffuseBSDF, DiffuseBSDFDesc};
 use self::instance::Instance;
 use self::mesh::{Mesh, MeshDesc};
 use self::registry::Registry;
@@ -42,6 +43,11 @@ fn main() -> Result<(), WindowError> {
         &mut registry,
     );
 
+    let bsdf = DiffuseBSDF::new(
+        DiffuseBSDFDesc::LinearRGB8 { r: 255, g: 0, b: 0 },
+        &mut registry,
+    );
+
     let mut scene = Scene {
         instances: vec![Instance {
             to_world: Mat4::IDENTITY,
@@ -50,7 +56,7 @@ fn main() -> Result<(), WindowError> {
             emitter: 0,
         }],
         shapes: vec![Box::new(mesh)],
-        bsdfs: vec![],
+        bsdfs: vec![Box::new(bsdf)],
         emitters: vec![],
         ..Default::default()
     };

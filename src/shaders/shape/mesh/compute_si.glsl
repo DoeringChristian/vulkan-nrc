@@ -4,18 +4,12 @@
 #extension GL_EXT_nonuniform_qualifier : enable
 
 #include "bindings.glsl"
-#include "compute_si/common.glsl"
+#include "shape/compute_si.glsl"
+#include "shape/mesh/common.glsl"
 
 layout(location = 0) callableDataInEXT ComputeSIParams params;
 
-struct Mesh {
-    uint indices;
-    uint indices_count;
-    uint positions;
-    uint normals;
-    uint uvs;
-};
-BUFFER_BINDING buffer MeshDataBuffer {
+BUFFER_BINDING buffer MehsBuffer {
     Mesh meshes[];
 } mesh_buffers[];
 BUFFER_BINDING buffer IndicesBuffer {

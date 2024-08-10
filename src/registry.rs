@@ -7,6 +7,7 @@ use crevice::glsl::Glsl;
 use crevice::std140::{self, AsStd140, Std140, WriteStd140};
 use indexmap::IndexMap;
 use screen_13::prelude::*;
+use screen_13_fx::ImageLoader;
 
 fn align_up(val: usize, alignment: usize) -> usize {
     ((val - 1) / alignment + 1) * alignment
@@ -97,6 +98,7 @@ pub struct Registry {
     pub data_buffers: IndexMap<usize, BufferIndex>,
     pub callables: IndexMap<&'static [u32], Shader>,
     pub intersections: IndexMap<&'static [u32], Shader>,
+    pub image_loader: ImageLoader,
 }
 
 pub fn upload_data(
@@ -143,6 +145,7 @@ impl Registry {
             data_buffers: Default::default(),
             callables: Default::default(),
             intersections: Default::default(),
+            image_loader: ImageLoader::new(device).unwrap(),
         }
     }
     pub fn add_buffer(&mut self, buffer: &Arc<Buffer>) -> BufferIndex {
@@ -159,6 +162,18 @@ impl Registry {
         let index = ImageIndex(self.buffers.len() as u32);
         self.images.push(image.clone());
         index
+    }
+    pub fn upload_linear_rgb8(&mut self, pixels: &[u8], width: u32, height: u32) -> Arc<Image> {
+        self.image_loader
+            .decode_linear(
+                0,
+                0,
+                pixels,
+                screen_13_fx::ImageFormat::R8G8B8,
+                width,
+                height,
+            )
+            .unwrap()
     }
     pub fn upload_buffer(&mut self, data: &[u8]) -> Arc<Buffer> {
         upload_data(data, &mut self.cache, &mut self.rgraph, &mut self.device)
