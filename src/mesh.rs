@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use crevice::{glsl::GlslStruct, std140::AsStd140};
 use glam::*;
+use inline_spirv::include_spirv;
 
 use crate::registry::{BufferIndex, BufferOffset, Registry};
 use crate::shape::Shape;
@@ -47,7 +48,7 @@ impl Shape for Mesh {
     }
 
     fn compute_surface_interaction(&self) -> &'static [u32] {
-        todo!()
+        include_spirv!("src/shaders/compute_si/mesh.glsl", rcall, vulkan1_2,  I "src/shaders")
     }
 
     fn register(&self, registry: &mut Registry) -> (BufferIndex, BufferOffset) {

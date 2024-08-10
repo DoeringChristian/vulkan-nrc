@@ -1,33 +1,35 @@
 #version 460
 
 #extension GL_EXT_ray_tracing : enable
+#extension GL_EXT_nonuniform_qualifier : enable
 
 #include "bindings.glsl"
+#include "compute_si/common.glsl"
 
 layout(location = 0) callableDataInEXT ComputeSIParams params;
 
-struct MeshData {
+struct Mesh {
     uint indices;
     uint indices_count;
     uint positions;
     uint normals;
     uint uvs;
 };
-layout(BUFFER_BINDINGS) MeshDataBuffer {
-    MeshData data[];
-} mesh[];
-layout(BUFFER_BINDINGS) IndicesBuffer {
+BUFFER_BINDING buffer MeshDataBuffer {
+    Mesh meshes[];
+} mesh_buffers[];
+BUFFER_BINDING buffer IndicesBuffer {
     uint[3] indices[];
-} indices[];
-layout(BUFFER_BINDINGS) PositionsBuffer {
+} index_buffers[];
+BUFFER_BINDING buffer PositionsBuffer {
     float[3] positions[];
-} positions[];
+} position_buffers[];
 
 void main() {
-    if (!params.pi.is_valid)
+    if (!params.pi.valid)
         return;
 
-    MeshData data = mesh[params.shape_buf].data[params.shape_offset];
+    Mesh mesh = mesh_buffers[params.instance.shape_buf].meshes[params.instance.shape_offset];
 
-    uint[3] index = indices[data.indices];
+    uint[3] triangle = index_buffers[mesh.indices].indices[params.pi.primitive];
 }
